@@ -1,0 +1,5 @@
+# uniprot_tools
+pandas
+tqdm
+biopython
+requests

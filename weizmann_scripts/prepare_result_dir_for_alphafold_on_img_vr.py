@@ -20,8 +20,8 @@ parser.add_argument('--bacteria_protein_name', type=str)
 parser.add_argument('--phage_protein_name', type=str)
 
 # configurations
-parser.add_argument('--human_proteins_dir', type=str, default=str(weizmann_config.HUMAN_PROTEINS_DIR))
-parser.add_argument('--virus_proteins_dir', type=str, default=str(weizmann_config.VIRUS_PROTEIND_DIR))
+parser.add_argument('--bacteria_proteins_dir', type=str, default=str(weizmann_config.EREZ_BACTERIA_PATH))
+parser.add_argument('--phage_proteins_dir', type=str, default=str(weizmann_config.EREZ_PHAGE_PATH))
 
 arguments = parser.parse_args()
 
@@ -38,7 +38,7 @@ def _parse_args_to_combined_protein_name(args) -> str:
 
 
 def create_combined_result_dir_with_fasta(args, prefix_to_add_to_protein_name=""):
-    bacteria_fasta_path = Path(args.human_proteins_dir, args.bacteria_protein_name,
+    bacteria_fasta_path = Path(args.bacteria_proteins_dir, args.bacteria_protein_name,
                                f"{args.bacteria_protein_name}.fasta")
     phage_fasta_path = Path(args.phage_proteins_dir, args.phage_protein_name, f"{args.phage_protein_name}.fasta")
     new_combined_dir_path = Path(args.results_dir,
@@ -49,13 +49,15 @@ def create_combined_result_dir_with_fasta(args, prefix_to_add_to_protein_name=""
     if not new_combined_dir_path.exists():
         os.mkdir(new_combined_dir_path)
     if not new_combined_fasta_path.exists():
+        # DEPRECATED change to concatenate_muiltiple_fasta_to_one_fasta
         _concatenate_multiple_files_to_one_file(src_files=[bacteria_fasta_path, phage_fasta_path],
                                                 dst_path=new_combined_fasta_path)
 
 
 def copy_msas_if_exist_to_dir(args, prefix_to_add_to_protein_name=""):
     """acording to alphafold nameing conventions, and erez matrix folder conventions"""
-    dest_msas_dir_path = Path(args.results_dir, f"{prefix_to_add_to_protein_name}{_parse_args_to_combined_protein_name(args)}", "msas")
+    dest_msas_dir_path = Path(args.results_dir,
+                              f"{prefix_to_add_to_protein_name}{_parse_args_to_combined_protein_name(args)}", "msas")
     dest_bacteria_msas_dir = Path(dest_msas_dir_path, "A")
     dest_phage_msas_dir = Path(dest_msas_dir_path, "B")
 
@@ -74,7 +76,7 @@ def copy_pdb_seqres_with_no_duplicates(args, prefix_to_add_to_protein_name=""):
      for consistency it is done the same way it was done before the python script
     """
     src_bacteria_pdb_seqres_path = Path(args.bacteria_proteins_dir, args.bacteria_protein_name,
-                                    "msas", "A", "pdb_seqres.fasta")
+                                        "msas", "A", "pdb_seqres.fasta")
     src_phage_pdb_seqres_path = Path(args.phage_proteins_dir, args.phage_protein_name, "msas", "B", "pdb_seqres.fasta")
     dest_combined_pdb_seqres_path = Path(args.results_dir,
                                          f"{prefix_to_add_to_protein_name}{_parse_args_to_combined_protein_name(args)}",
@@ -92,5 +94,3 @@ def copy_pdb_seqres_with_no_duplicates(args, prefix_to_add_to_protein_name=""):
 create_combined_result_dir_with_fasta(arguments)
 copy_msas_if_exist_to_dir(arguments)
 copy_pdb_seqres_with_no_duplicates(arguments)
-
-

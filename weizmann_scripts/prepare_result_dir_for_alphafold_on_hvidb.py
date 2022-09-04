@@ -9,21 +9,23 @@ sys.path.append('/home/labs/sorek/noamsh/human_virus_interactions/hvi')
 from data_handaling.fasta_handaling import concatenate_muiltiple_fasta_to_one_fasta
 import weizmann_scripts.weizmann_config as weizmann_config
 
-parser = argparse.ArgumentParser(
-    description="creating results directory like alphafold expect to enable pre-computation of msas")
+def parse_arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="creating results directory like alphafold expect to enable pre-computation of msas")
 
-# required inputes
-parser.add_argument('--results_dir', type=str)
-parser.add_argument('--host_protein_name', type=str)
-parser.add_argument('--virus_protein_name', type=str)
+    # required inputes
+    parser.add_argument('--results_dir', type=str)
+    parser.add_argument('--host_protein_name', type=str)
+    parser.add_argument('--virus_protein_name', type=str)
 
-# configurations
-parser.add_argument('--host_proteins_dir', type=str, default=str(weizmann_config.HUMAN_PROTEINS_DIR))
-parser.add_argument('--virus_proteins_dir', type=str, default=str(weizmann_config.VIRUS_PROTEINS_DIR))
+    # configurations
+    parser.add_argument('--host_proteins_dir', type=str, default=str(weizmann_config.HUMAN_PROTEINS_DIR))
+    parser.add_argument('--virus_proteins_dir', type=str, default=str(weizmann_config.VIRUS_PROTEINS_DIR))
 
-parser.add_argument("--fasta_complex_format", type=str, default="alphafold", choices=["alphafold", "colabfold"])
+    parser.add_argument("--fasta_complex_format", type=str, default="alphafold", choices=["alphafold", "colabfold"])
 
-arguments = parser.parse_args()
+    arguments = parser.parse_args()
+    return arguments
 
 
 def _parse_args_to_combined_protein_name(args) -> str:
@@ -60,6 +62,7 @@ def copy_msas_if_exist_to_dir(args, prefix_to_add_to_protein_name=""):
     if virus_msas_existing_dir.exists() and not dest_virus_msas_dir.exists():
         shutil.copytree(virus_msas_existing_dir, dest_virus_msas_dir)
 
-
-create_combined_result_dir_with_fasta(arguments)
-copy_msas_if_exist_to_dir(arguments)
+if __name__ == '__main__':
+    arguments = parse_arguments()
+    create_combined_result_dir_with_fasta(arguments)
+    copy_msas_if_exist_to_dir(arguments)

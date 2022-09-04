@@ -1,9 +1,11 @@
 #HOST_PROTEIN="LsoA" # short defence protein - for IMG-VR
-HOST_PROTEIN="S6B2B6" #  interacts with Q2N0S6	- for HVIDB
+#HOST_PROTEIN="S6B2B6" #  interacts with Q2N0S6 - for HVIDB
+HOST_PROTEIN="P78310" #  interacts with P36711 - for HVIDB with solved interaction structure
 
-#VIRUS_PROTEIN="IMGVR2400828" # first phage protien - for IMG-VR
+
 #VIRUS_PROTEIN="LAB1717" # has interaction with LsoA- for IMG-VR
-VIRUS_PROTEIN="Q2N0S6" # has interaction with S6B2B6	- for HVIDB
+#VIRUS_PROTEIN="Q2N0S6" # has interaction with S6B2B6 - for HVIDB
+VIRUS_PROTEIN="P36711" # has interaction with P78310 - for HVIDB with solved interaction structure
 
 JOB_LOGS_DIR=/home/labs/sorek/noamsh/wexac_job_logs
 mkdir -p "$JOB_LOGS_DIR"

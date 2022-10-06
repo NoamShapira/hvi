@@ -16,12 +16,13 @@ class HvidbColumnNames(NamedTuple):
     human_protein_name = "Human_ProteinName"
     virus_gene_name = "Virus_GeneName"
     virus_protein_name = "Virus_ProteinName"
+    experimental_system = "Experimental_System"
 
 
 class HvidbDataset:
     def __init__(self, df: pd.DataFrame):
         self.columns_names = HvidbColumnNames()
-        self.df = df
+        self.df: pd.DataFrame = df
 
 
 def get_hvidb_from_csv(csv_path: Path) -> HvidbDataset:

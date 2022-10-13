@@ -11,6 +11,7 @@ DATASET="hvidb" # can be hvidb or img_vr
 # python environment for data organizing
 module del miniconda/201904/python/3.7
 module load miniconda/201904/python/3.7
+conda deactivate
 conda activate noam_alphafold
 
 if [ $DATASET == "img_vr" ]; then
@@ -19,6 +20,8 @@ if [ $DATASET == "img_vr" ]; then
 fi
 
 if [ $DATASET == "hvidb" ]; then
+  echo python inside job outside singularity:
+  which python
   RESULTS_DIR=/home/labs/sorek/noamsh/human_virus_interactions/results/alphafold
   python "$SCRIPTS_REPO_DIR"/weizmann_scripts/prepare_result_dir_for_alphafold_on_hvidb.py --results_dir="$RESULTS_DIR" --host_protein_name="$HOST_PROTEIN" --virus_protein_name="$VIRUS_PROTEIN"
 fi

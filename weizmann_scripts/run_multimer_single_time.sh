@@ -6,19 +6,20 @@ SCRIPTS_REPO_DIR=/home/labs/sorek/noamsh/human_virus_interactions/hvi
 ALPHAFOLD_REPO_DIR=/home/labs/sorek/noamsh/alphafold
 
 NUM_PREDICTION_PER_MODEL="1"
-DATASET="hvidb" # ban be hvidb or img_vr
+DATASET="hvidb" # can be hvidb or img_vr
 
 # python environment for data organizing
+module del miniconda/201904/python/3.7
 module load miniconda/201904/python/3.7
 conda activate noam_alphafold
 
 if [ $DATASET == "img_vr" ]; then
-  RESULTS_DIR=/home/labs/sorek/noamsh/AF_multimer_exercise/results/
+  RESULTS_DIR=/home/labs/sorek/noamsh/AF_multimer_exercise/results
   python "$SCRIPTS_REPO_DIR"/weizmann_scripts/prepare_result_dir_for_alphafold_on_img_vr.py --results_dir="$RESULTS_DIR" --bacteria_protein_name="$HOST_PROTEIN" --phage_protein_name="$VIRUS_PROTEIN"
 fi
 
 if [ $DATASET == "hvidb" ]; then
-  RESULTS_DIR=/home/labs/sorek/noamsh/human_virus_interactions/results/alphafold/
+  RESULTS_DIR=/home/labs/sorek/noamsh/human_virus_interactions/results/alphafold
   python "$SCRIPTS_REPO_DIR"/weizmann_scripts/prepare_result_dir_for_alphafold_on_hvidb.py --results_dir="$RESULTS_DIR" --host_protein_name="$HOST_PROTEIN" --virus_protein_name="$VIRUS_PROTEIN"
 fi
 

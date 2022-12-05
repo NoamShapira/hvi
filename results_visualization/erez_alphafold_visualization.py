@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm.contrib.concurrent import process_map
 
-from results_visualization.results_loading import get_metrics_from_alphafold_results_dir
+from results_visualization.results_loading import get_results_from_alphafold_results_dir
 
 plt.switch_backend('Agg')
 
@@ -79,12 +79,14 @@ def create_plddts_and_paes_images_in_alphafold_results_dir(results_path: Path, i
             print(f"Found 1 chain, in {results_path.name}")
             lengths_of_proteins = None
 
-        paes, plddts, _, _ = get_metrics_from_alphafold_results_dir(results_path)
+        multi_mododel_results = get_results_from_alphafold_results_dir(results_path)
         print(f"loaded paes and plddts, from {results_path.name}")
 
         images_dir_path = f"{results_path}/images" if images_dir_path is None else images_dir_path
         if not os.path.exists(images_dir_path):
             os.mkdir(images_dir_path)
+        paes = multi_mododel_results.get_all_paes()
+        plddts = multi_mododel_results.get_all_plddts()
         if len(paes) > 0:
             plot_and_save_paes(paes, f"{images_dir_path}/{results_path.name}_pae.png", return_figure=False, Ls=lengths_of_proteins)
         plot_and_save_plddts(plddts, f"{images_dir_path}/{results_path.name}_plddt.png", return_figure=False, Ls=lengths_of_proteins)

@@ -32,14 +32,15 @@ def convert_plddt_results_to_df(plddt_aggregated_results: Dict[str, Dict[str, Tu
 def _split_plddt_according_to_sequence_lengths(plddt: np.ndarray, sequences_lengths: List[int]) -> List[np.ndarray]:
     assert sum(sequences_lengths) == len(plddt), \
         "plddts should be the length of all the sequences combined"
-    sequences_ind = []
+    sequences_ind_ranges = []
     cur_start_ind = 0
     for sequences_length in sequences_lengths:
-        sequences_ind.append((cur_start_ind, sequences_length - 1))
-        cur_start_ind = sequences_length - 1
+        cur_end_ind =  cur_start_ind + sequences_length
+        sequences_ind_ranges.append((cur_start_ind, cur_end_ind))
+        cur_start_ind = cur_end_ind
 
     plddts = []
-    for start_ind, end_ind in sequences_ind:
+    for start_ind, end_ind in sequences_ind_ranges:
         plddts.append(plddt[start_ind:end_ind])
     return plddts
 
@@ -53,16 +54,16 @@ def aggregate_plddt_per_sequence(model_results: ModelResults, sequences_lengths:
 
 def get_best_model_according_to_per_sequence_plddt(all_model_results: MultiModelResults) -> Tuple[ModelResults,
                                                                                                   int, List[int]]:
-    best_model_results, best_overall_results, best_aggregated_plddt = None, None, None
+    best_model_results, best_overall_results, best_aggregated_plddts_of_different_chains = None, None, None
     for model_results in all_model_results.results_list:
-        aggregated_plddt = aggregate_plddt_per_sequence(model_results, all_model_results.chains_lengths)
-        overall_plddt_score = harmonic_mean(aggregated_plddt)
+        aggregated_plddts_of_different_chains = aggregate_plddt_per_sequence(model_results, all_model_results.chains_lengths)
+        overall_plddt_score = harmonic_mean(aggregated_plddts_of_different_chains)
         if best_overall_results is None or overall_plddt_score > best_overall_results:
             best_overall_results = overall_plddt_score
-            best_aggregated_plddt = aggregated_plddt
+            best_aggregated_plddts_of_different_chains = aggregated_plddts_of_different_chains
             best_model_results = model_results
 
-    return best_model_results, best_overall_results, best_aggregated_plddt
+    return best_model_results, best_overall_results, best_aggregated_plddts_of_different_chains
 
 
 def get_interaction_metrics() -> pd.DataFrame:

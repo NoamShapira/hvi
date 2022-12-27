@@ -10,7 +10,7 @@ import weizmann_config
 
 if __name__ == '__main__':
 
-    positive_control_hvidb = hvidb.HvidbDataset(pd.read_csv(weizmann_config.HVIDV_POSITIVE_CONTROL_CSV_PATH))
+    positive_control_hvidb = hvidb.HvidbDataset(pd.read_csv(weizmann_config.HVIDB_POSITIVE_CONTROL_CSV_PATH))
 
     for index, row in positive_control_hvidb.df.iterrows():
         host_protein = row[positive_control_hvidb.columns_names.uniprot_human]

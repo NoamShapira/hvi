@@ -14,16 +14,17 @@ module load miniconda/201904/python/3.7
 conda deactivate
 conda activate noam_alphafold
 
+# data preperation
 if [ $DATASET == "img_vr" ]; then
   RESULTS_DIR=/home/labs/sorek/noamsh/AF_multimer_exercise/results
-  python "$SCRIPTS_REPO_DIR"/weizmann_scripts/prepare_result_dir_for_alphafold_on_img_vr.py --results_dir="$RESULTS_DIR" --bacteria_protein_name="$HOST_PROTEIN" --phage_protein_name="$VIRUS_PROTEIN"
+  python "$SCRIPTS_REPO_DIR"/weizmann_scripts/data_organization/prepare_result_dir_for_alphafold_on_img_vr.py --results_dir="$RESULTS_DIR" --bacteria_protein_name="$HOST_PROTEIN" --phage_protein_name="$VIRUS_PROTEIN"
 fi
 
 if [ $DATASET == "hvidb" ]; then
   echo python inside job outside singularity:
   which python
   RESULTS_DIR=/home/labs/sorek/noamsh/human_virus_interactions/results/alphafold
-  python "$SCRIPTS_REPO_DIR"/weizmann_scripts/prepare_result_dir_for_alphafold_on_hvidb.py --results_dir="$RESULTS_DIR" --host_protein_name="$HOST_PROTEIN" --virus_protein_name="$VIRUS_PROTEIN"
+  python "$SCRIPTS_REPO_DIR"/weizmann_scripts/data_organization/prepare_result_dir_for_alphafold_on_hvidb.py --results_dir="$RESULTS_DIR" --host_protein_name="$HOST_PROTEIN" --virus_protein_name="$VIRUS_PROTEIN"
 fi
 
 HOST_VIRUS="${HOST_PROTEIN}_${VIRUS_PROTEIN}"

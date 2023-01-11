@@ -1,5 +1,5 @@
 from data_handaling.hvidb import get_hvidb_from_csv
-import weizmann_config
+from weizmann_scripts import weizmann_config
 
 hvidb = get_hvidb_from_csv(weizmann_config.HVIDB_CSV_PATH)
 

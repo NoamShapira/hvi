@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Union, Tuple, List, Dict, Optional, NamedTuple
 
 import numpy as np
+from tqdm import tqdm
 from tqdm.contrib.concurrent import process_map
 
 
@@ -61,13 +62,19 @@ def get_results_from_alphafold_results_dir(path: Union[Path, str]) -> MultiModel
         ranks = json.load(f)["order"]
 
     for model_name in ranks:
-        with open(f"{path}/result_{model_name}.pkl", 'rb') as f:
-            data = pickle.load(f)
-        pae = data[results_keys.pae] if results_keys.pae in data else None
-        plddt = data[results_keys.plddt]
-        ptm = (data[results_keys.ptm])
-        iptm = (data[results_keys.iptm])
-        all_model_results.append(ModelResults(pae=pae, plddt=plddt, ptm=ptm, iptm=iptm, model_name=model_name))
+        try:
+            with open(f"{path}/result_{model_name}.pkl", 'rb') as f:
+                data = pickle.load(f)
+            pae = data[results_keys.pae] if results_keys.pae in data else None
+            plddt = data[results_keys.plddt]
+            ptm = (data[results_keys.ptm])
+            iptm = (data[results_keys.iptm])
+            all_model_results.append(ModelResults(pae=pae, plddt=plddt, ptm=ptm, iptm=iptm, model_name=model_name))
+        except FileNotFoundError:
+            # model was calculated but results are not saved
+            pass
+    if len(all_model_results) == 0:
+        raise ValueError(f"in the path: {path} all results are deleted")
 
     if os.path.isfile(f"{path}/msas/chain_id_map.json"):
         with open(f"{path}/msas/chain_id_map.json", 'r') as f:
@@ -105,4 +112,15 @@ if __name__ == '__main__':
     dir_with_all_results_dirs = Path(r"/home/labs/sorek/noamsh/human_virus_interactions/results/alphafold")
     paths_of_all_results_dirs = [Path(dir_entry.path) for dir_entry in os.scandir(dir_with_all_results_dirs) if
                                  dir_entry.is_dir()]
-    multi_model_results = get_results_from_alphafold_results_dir(paths_of_all_results_dirs[0])
+    # multi_model_results = get_results_from_alphafold_results_dir(paths_of_all_results_dirs[0])
+    for complex_path in tqdm(paths_of_all_results_dirs):
+        try:
+            with open(f"{complex_path}/ranking_debug.json", 'r') as f:
+                ranks = json.load(f)["order"]
+                for i, model_name in enumerate(ranks):
+                    if i != 0:
+                        os.remove(f"{complex_path}/result_{model_name}.pkl")
+        except FileNotFoundError:
+            pass
+
+

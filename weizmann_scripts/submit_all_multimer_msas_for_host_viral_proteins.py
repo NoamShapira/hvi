@@ -7,6 +7,7 @@ from itertools import zip_longest
 from pathlib import Path
 from typing import List
 
+from data_handaling import uniprot
 from data_handaling.hvidb import get_hvidb_from_csv
 from weizmann_scripts import weizmann_config
 from weizmann_scripts.data_organization.prepare_result_dir_for_alphafold_on_hvidb import main as prepare_results_dir
@@ -40,12 +41,17 @@ def copy_msas_to_permenant_dir(msas_results_dir: Path, human_prots_dir: Path, hu
 
 
 host_proteins, virus_proteins = get_proteins_to_calculate_masa_from_hvidb()
+host_proteins = [uniprot.transform_domain_id_to_protein_id(name) for name in host_proteins]
+virus_proteins = [uniprot.transform_domain_id_to_protein_id(name) for name in virus_proteins]
 fill_value = virus_proteins[0] if len(host_proteins) > len(virus_proteins) else host_proteins[0]
 
-proteins_complexes = zip_longest(host_proteins, virus_proteins, fillvalue=fill_value)
+proteins_complexes = list(zip_longest(host_proteins, virus_proteins, fillvalue=fill_value))
 
-limit_num_of_jobs = 200
-for human_prot_name, virus_prot_name in list(proteins_complexes)[:limit_num_of_jobs]:
+limit_num_of_jobs = 3
+start_job = 0
+problematic_protein = "Q15418"
+proteins_complexes = [proteins_complexes[[human_prot for human_prot, _ in proteins_complexes].index("Q15418")]]
+for human_prot_name, virus_prot_name in list(proteins_complexes)[start_job:start_job + limit_num_of_jobs]:
     os.environ["RESULTS_DIR"] = str(tmp_results_dir)
     os.environ["HOST_PROTEIN_NAME"] = human_prot_name
     os.environ["VIRUS_PROTEIN_NAME"] = virus_prot_name
@@ -57,11 +63,3 @@ for human_prot_name, virus_prot_name in list(proteins_complexes)[:limit_num_of_j
 
         print(f"\none of {human_prot_name} or {virus_prot_name}, probably didnt have fasta from uni prot")
         print(str(e))
-
-# msa_path = Path(tmp_results_dir, f"{human_prot_name}_{virus_prot_name}", "msas")
-# copy_msas_to_permenant_dir(msas_results_dir=msa_path,
-#                            human_prots_dir=target_host_proteins_dir,
-#                            human_prot_name=human_prot_name,
-#                            virus_prots_dir=target_viral_proteins_dir,
-#                            virus_prot_name=virus_prot_name)
-# remove_dir(tmp_results_dir)

@@ -26,12 +26,18 @@ def _get_single_sequence_from_uniprot(cID: str) -> Optional[SeqRecord]:
 def get_protein_sequences(uniprot_list: List[str]) -> Dict[str, SeqRecord]:
     pSeqs = {}
     sequences_list = thread_map(_get_single_sequence_from_uniprot, uniprot_list,
-                               desc="loading sequences from uniprot",
-                               unit="protein")
+                                desc="loading sequences from uniprot",
+                                unit="protein")
     for name, seq in zip(uniprot_list, sequences_list):
         if seq is not None:
             pSeqs[name] = seq
     return pSeqs
+
+
+def transform_domain_id_to_protein_id(domain_id: str):
+    if "-PRO" in domain_id:
+        return domain_id.split("-PRO")[0]
+    return domain_id
 
 
 if __name__ == '__main__':
